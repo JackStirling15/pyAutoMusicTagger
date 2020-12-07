@@ -3,28 +3,17 @@ import string
 import eyed3
 
 
-DIR = "E:/Music/DJ/Library/"
-removeList = [
-    "[",
-    " Original",
-    " HQ",
-    " FREE",
-    " hq",
-    " original",
-    " Hq"
-]
+DIR = "testDir/"
+removeList = ["[", " Original", " HQ", " FREE", " hq", " original", " Hq"]
 
-rmList = [
-    "ft",
-    "feat",
-    "featuring"
-]
+rmList = ["ft", "feat", "featuring", "MP3", "mp3", "WAV", "wav"]
 
 
 def remove_str(valueToCheck):
     for removeValue in rmList:
-        if removeValue in valueToCheck:
-            valueToCheck.replace(removeValue, " ")
+        if removeValue + " - " in valueToCheck:
+            removeValue = f"{removeValue} - "
+        valueToCheck = valueToCheck.replace(removeValue, "")
     return valueToCheck
 
 
@@ -37,28 +26,44 @@ def remove_end(valueToCheck):
 
 
 for fileName in os.listdir(DIR):
+    # loop through files in directory
     print(fileName)
 
+    # only run on .mp3s
     if fileName.endswith(".mp3"):
+        # remove underlines
         song = fileName.replace("_", " ")
         song = song.split(".")
+        # only read up to the first .
         song = " ".join(song[:-1])
 
+        # remove unknown char
         printable = set(string.printable)
         song = ''.join(filter(lambda x: x in printable, song))
+
+        # split on -
         if " - " in song:
+            # load file
             audioObj = eyed3.load(DIR + fileName)
 
             splitDash = song.split(" - ")
+            # join all before last -
+            splitDash = [" - ".join(splitDash[:-1]), splitDash[-1]]
             artistName = splitDash[0]
+            # remove from artistName
             artistName = remove_str(artistName)
-            print(artistName)
-            print(splitDash)
+            print(f"Artist: {artistName}")
+
+            # remove extra data at the end
             songName = remove_end(splitDash[1])
-            print(songName)
+            print(f"Song Name: {songName}")
+
+            # write tags
             audioObj.tag.title = songName.title()
             audioObj.tag.artist = artistName
             audioObj.tag.album_artist = artistName
+
+            # catch any errors when saving tags
             try:
                 audioObj.tag.save()
             except:

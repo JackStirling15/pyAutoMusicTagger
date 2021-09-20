@@ -3,14 +3,13 @@ import string
 import eyed3
 
 
-DIR = "testDir/"
-removeList = ["[", " Original", " HQ", " FREE", " hq", " original", " Hq"]
-
-rmList = ["ft", "feat", "featuring", "MP3", "mp3", "WAV", "wav"]
+DIR = "~/git/pyAutoMusicTagger/TestDir/"
+END_REMOVE = ["[", " Original", " HQ", " FREE", " hq", " original", " Hq"]
+REMOVE_ALL = ["ft", "feat", "featuring", "MP3", "mp3", "WAV", "wav"]
 
 
 def remove_str(valueToCheck):
-    for removeValue in rmList:
+    for removeValue in REMOVE_ALL:
         if removeValue + " - " in valueToCheck:
             removeValue = f"{removeValue} - "
         valueToCheck = valueToCheck.replace(removeValue, "")
@@ -18,7 +17,7 @@ def remove_str(valueToCheck):
 
 
 def remove_end(valueToCheck):
-    for removeValue in removeList:
+    for removeValue in END_REMOVE:
         if removeValue in valueToCheck:
             valueToCheck = valueToCheck.split(removeValue)[0]
             #    valueToCheck = re.split(removeValue, valueToCheck, flags=re.IGNORECASE)
